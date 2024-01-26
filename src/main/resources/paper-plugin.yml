@@ -1,0 +1,8 @@
+name: MLGRushReloaded
+version: '${project.version}'
+main: com.meliochausson.mlgrushreloaded.MLGRushReloaded
+api-version: '1.20'
+prefix: [MLGRush]
+load: STARTUP
+authors: [Melio, MrChausson]
+description: A MLG Rush plugin made for demonstration purpose

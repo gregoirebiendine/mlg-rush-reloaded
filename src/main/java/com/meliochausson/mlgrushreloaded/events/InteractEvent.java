@@ -3,9 +3,6 @@ package com.meliochausson.mlgrushreloaded.events;
 import com.meliochausson.mlgrushreloaded.MLGRushReloaded;
 import com.meliochausson.mlgrushreloaded.enums.TeamEnum;
 import com.meliochausson.mlgrushreloaded.managers.GameManager;
-import net.kyori.adventure.text.format.NamedTextColor;
-import org.bukkit.Bukkit;
-import org.bukkit.GameMode;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
@@ -16,6 +13,7 @@ import org.bukkit.persistence.PersistentDataType;
 
 public class InteractEvent implements Listener {
     private MLGRushReloaded _instance;
+    
     public InteractEvent(MLGRushReloaded instance) {
         this._instance = instance;
     }

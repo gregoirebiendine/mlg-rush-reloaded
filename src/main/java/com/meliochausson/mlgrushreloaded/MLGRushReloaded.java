@@ -1,10 +1,8 @@
 package com.meliochausson.mlgrushreloaded;
 
 import com.meliochausson.mlgrushreloaded.commands.mlgbridge;
-import com.meliochausson.mlgrushreloaded.commands.mlgkit;
 import com.meliochausson.mlgrushreloaded.commands.mlgstart;
 import com.meliochausson.mlgrushreloaded.commands.mlgstop;
-import com.meliochausson.mlgrushreloaded.commands.test;
 import com.meliochausson.mlgrushreloaded.events.DropEvent;
 import com.meliochausson.mlgrushreloaded.events.FoodLevelEvent;
 import com.meliochausson.mlgrushreloaded.events.InteractEvent;
@@ -23,34 +21,46 @@ import org.bukkit.World;
 
 import static org.bukkit.Bukkit.getCommandMap;
 
-import java.util.ArrayList;
-
 public final class MLGRushReloaded extends JavaPlugin {
     public final NamespacedKey key = new NamespacedKey(this, "data");
+    public static MLGRushReloaded _instance;
+
+    public static void runTaskLater(Runnable cb, long delaySeconds) {
+        Bukkit.getScheduler().runTaskLater(_instance, cb, delaySeconds * 20L); // 20 ticks = 1sec
+    }
 
     private void initGamerule() {
         World world = Bukkit.getWorld("world");
+        World rush = Bukkit.getWorld("rush");
 
-        world.setGameRule(GameRule.KEEP_INVENTORY, true);
-        world.setGameRule(GameRule.DO_IMMEDIATE_RESPAWN, true);
-        world.setGameRule(GameRule.DO_DAYLIGHT_CYCLE, false);
-        world.setGameRule(GameRule.DO_WEATHER_CYCLE, false);
-        world.setPVP(false);
+        if (world != null) {
+            world.setGameRule(GameRule.KEEP_INVENTORY, true);
+            world.setGameRule(GameRule.DO_IMMEDIATE_RESPAWN, true);
+            world.setGameRule(GameRule.DO_DAYLIGHT_CYCLE, false);
+            world.setGameRule(GameRule.DO_WEATHER_CYCLE, false);
+            world.setPVP(false);
+        }
+
+        if (rush != null) {
+            rush.setGameRule(GameRule.KEEP_INVENTORY, true);
+            rush.setGameRule(GameRule.DO_IMMEDIATE_RESPAWN, true);
+            rush.setGameRule(GameRule.DO_DAYLIGHT_CYCLE, false);
+            rush.setGameRule(GameRule.DO_WEATHER_CYCLE, false);
+        }
     }
 
     @Override
     public void onEnable() {
-        GameManager.init();
+        _instance = this;
+
+        GameManager.init(this);
         StuffManager.init(key);
 
         this.initGamerule();
 
-        getCommandMap().register("test", "", new test("test", "a test command", "/test", new ArrayList<String>()));
-        getCommandMap().register("mlgkit", "", new mlgkit("mlgkit"));
         getCommandMap().register("mlgstart", "", new mlgstart("mlgstart"));
         getCommandMap().register("mlgstop", "", new mlgstop("mlgstop"));
         getCommandMap().register("mlgbridge", "", new mlgbridge("mlgbridge"));
-
 
         getServer().getPluginManager().registerEvents(new DropEvent(), this);
         getServer().getPluginManager().registerEvents(new QuitEvent(), this);

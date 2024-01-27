@@ -1,5 +1,6 @@
 package com.meliochausson.mlgrushreloaded.events;
 
+import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -12,13 +13,11 @@ public class PlaceBlockEvent implements Listener {
     
     @EventHandler
     public void onBlockPlace(BlockPlaceEvent event) {
-        Player p = event.getPlayer();
-
         if (!GameManager.isGameRunning)
             return;
 
         ItemStack item = event.getItemInHand();
-        item.setAmount(1);
-        p.getInventory().addItem(item);
+        if (item.getType() == Material.SANDSTONE)
+            item.setAmount(64);
     }
 }

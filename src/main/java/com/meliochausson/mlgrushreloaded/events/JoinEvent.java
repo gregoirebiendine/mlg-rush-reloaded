@@ -1,6 +1,5 @@
 package com.meliochausson.mlgrushreloaded.events;
 
-import com.meliochausson.mlgrushreloaded.MLGRushReloaded;
 import com.meliochausson.mlgrushreloaded.managers.StuffManager;
 
 import net.kyori.adventure.text.Component;

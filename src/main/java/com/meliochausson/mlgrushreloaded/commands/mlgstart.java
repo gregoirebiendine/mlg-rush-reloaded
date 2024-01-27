@@ -21,10 +21,7 @@ public class mlgstart extends Command {
     public boolean execute(@NotNull CommandSender commandSender, @NotNull String s, @NotNull String[] strings) {
         if (!(commandSender instanceof Player))
             return false;
-            
-        // Player player = (Player) commandSender;
-
-        GameManager.startGame();
+        GameManager.startGame((Player)commandSender);
         return true;
     }
 }

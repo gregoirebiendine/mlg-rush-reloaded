@@ -20,6 +20,7 @@ public class mlgbridge extends Command {
 
     public mlgbridge(@NotNull String name) {
         super(name);
+        super.setPermission("mlg.bridge");
     }
 
     @Override
@@ -40,8 +41,6 @@ public class mlgbridge extends Command {
                     }
                 }
             }
-
-
 
             // Building bridge
             int bridgeLength = 36;
@@ -123,16 +122,5 @@ public class mlgbridge extends Command {
             return false;
         }
         // return true;
-    }
-
-    @Override
-    public void setPermission(@Nullable String permission) {
-        super.setPermission("mlg.start");
-    }
-
-    @Override
-    public @Nullable Component permissionMessage() {
-        super.permissionMessage(Component.text("tema le nul"));
-        return null;
     }
 }

@@ -44,17 +44,18 @@ public class StuffManager {
     public static void applyGameStuff(Player p) {
         p.getInventory().clear();
 
+        // Base stuff
         ItemStack sword = new ItemStack(Material.DIAMOND_SWORD);
         ItemStack pickaxe = new ItemStack(Material.DIAMOND_PICKAXE);
         ItemStack sandstone = new ItemStack(Material.SANDSTONE, 128);
 
+        // Stick
         ItemStack stick = new ItemStack(Material.STICK, 1);
         ItemMeta stickMeta = stick.getItemMeta();
         stickMeta.displayName(Component.text("Stick of Destiny").color(NamedTextColor.GOLD));
         stickMeta.addEnchant(Enchantment.KNOCKBACK, 2, true);
         stick.setItemMeta(stickMeta);
 
-        p.getInventory().addItem(sword, pickaxe, stick, sandstone
-        );
+        p.getInventory().addItem(sword, pickaxe, stick, sandstone);
     }
 }

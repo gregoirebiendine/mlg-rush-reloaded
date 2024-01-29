@@ -13,8 +13,8 @@ public class mlgstart extends Command {
 
     public mlgstart(@NotNull String name) {
         super(name);
-        this.setPermission("mlg.start");
-        this.permissionMessage(Component.text("Can't do this!"));
+        super.setPermission("mlg.start");
+        super.permissionMessage(Component.text("Can't do this!"));
     }
 
     @Override

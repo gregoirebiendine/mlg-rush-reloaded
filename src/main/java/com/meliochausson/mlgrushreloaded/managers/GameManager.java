@@ -58,7 +58,7 @@ public class GameManager {
                 p.teleport(Objects.requireNonNull(Bukkit.getWorld("rush")).getSpawnLocation());
                 StuffManager.applyGameStuff(p);
             });
-        }, 1);
+        }, 1.5);
 
         isGameRunning = true;
     }

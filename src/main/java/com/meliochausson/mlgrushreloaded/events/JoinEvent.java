@@ -13,6 +13,8 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 
+import java.util.Objects;
+
 public class JoinEvent implements Listener {
     @EventHandler
     public void onPlayerJoin(PlayerJoinEvent event) {
@@ -24,7 +26,7 @@ public class JoinEvent implements Listener {
 
         event.joinMessage(msg);
 
-        p.teleport(Bukkit.getWorld("world").getSpawnLocation());
+        p.teleport(Objects.requireNonNull(Bukkit.getWorld("lobby")).getSpawnLocation());
 
         p.setGameMode(GameMode.ADVENTURE);
         p.setHealth(20);

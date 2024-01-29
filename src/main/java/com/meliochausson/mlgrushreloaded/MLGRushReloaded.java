@@ -25,28 +25,8 @@ public final class MLGRushReloaded extends JavaPlugin {
     public final NamespacedKey key = new NamespacedKey(this, "data");
     public static MLGRushReloaded _instance;
 
-    public static void runTaskLater(Runnable cb, long delaySeconds) {
-        Bukkit.getScheduler().runTaskLater(_instance, cb, delaySeconds * 20L); // 20 ticks = 1sec
-    }
-
-    private void initGamerule() {
-        World world = Bukkit.getWorld("world");
-        World rush = Bukkit.getWorld("rush");
-
-        if (world != null) {
-            world.setGameRule(GameRule.KEEP_INVENTORY, true);
-            world.setGameRule(GameRule.DO_IMMEDIATE_RESPAWN, true);
-            world.setGameRule(GameRule.DO_DAYLIGHT_CYCLE, false);
-            world.setGameRule(GameRule.DO_WEATHER_CYCLE, false);
-            world.setPVP(false);
-        }
-
-        if (rush != null) {
-            rush.setGameRule(GameRule.KEEP_INVENTORY, true);
-            rush.setGameRule(GameRule.DO_IMMEDIATE_RESPAWN, true);
-            rush.setGameRule(GameRule.DO_DAYLIGHT_CYCLE, false);
-            rush.setGameRule(GameRule.DO_WEATHER_CYCLE, false);
-        }
+    public static void runTaskLater(Runnable cb, double delaySeconds) {
+        Bukkit.getScheduler().runTaskLater(_instance, cb, (long)(delaySeconds * 20L)); // 20 ticks = 1sec
     }
 
     @Override
@@ -55,8 +35,6 @@ public final class MLGRushReloaded extends JavaPlugin {
 
         GameManager.init(this);
         StuffManager.init(key);
-
-        this.initGamerule();
 
         getCommandMap().register("mlgstart", "", new mlgstart("mlgstart"));
         getCommandMap().register("mlgstop", "", new mlgstop("mlgstop"));

@@ -15,7 +15,6 @@ import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 import java.util.UUID;
 
 public class GameManager {
@@ -35,8 +34,8 @@ public class GameManager {
         List<UUID> tempList = new ArrayList<>(RedTeam);
         tempList.addAll(BlueTeam);
 
-        if (tempList.size() != 2) {
-            sender.sendMessage(Component.text("Les équipes ne sont pas pleines.").color(NamedTextColor.RED));
+        if (tempList.size() != 2 && !sender.isOp()) {
+            sender.sendMessage(Component.text("Teams are not full.").color(NamedTextColor.RED));
             return;
         }
 
@@ -46,16 +45,16 @@ public class GameManager {
                 return;
 
             p.playSound(p, Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 1, 1);
-            p.sendTitlePart(TitlePart.TITLE, Component.text("Préparation...").color(NamedTextColor.GRAY).decorate(TextDecoration.ITALIC));
+            p.sendTitlePart(TitlePart.TITLE, Component.text("Setup...").color(NamedTextColor.GRAY).decorate(TextDecoration.ITALIC));
         });
 
         MLGRushReloaded.runTaskLater(() -> {
             tempList.forEach(uuid -> {
                 final Player p = Bukkit.getPlayer(uuid);
-                if (p == null)
+                String w = _instance.getCustomConfig().getGameWorld();
+                if (p == null || w == null)
                     return;
-
-                p.teleport(Objects.requireNonNull(Bukkit.getWorld("rush")).getSpawnLocation());
+                p.teleport(Bukkit.getWorld(w).getSpawnLocation());
                 StuffManager.applyGameStuff(p);
             });
         }, 1.5);
@@ -68,12 +67,13 @@ public class GameManager {
 
         RedTeam.forEach(uuid -> {
             final Player p = Bukkit.getPlayer(uuid);
-            if (p == null)
+            String w = _instance.getCustomConfig().getLobbyWorld();
+            if (p == null || w == null)
                 return;
 
             p.playerListName(null);
             StuffManager.applyLobbyStuff(p);
-            p.teleport(Bukkit.getWorld("world").getSpawnLocation());
+            p.teleport(Bukkit.getWorld(w).getSpawnLocation());
         });
 
         clearMap();
@@ -85,7 +85,11 @@ public class GameManager {
     }
 
     private static void clearMap() {
-        World world = Bukkit.getWorld("rush");
+        String w = _instance.getCustomConfig().getGameWorld();
+        if (w == null)
+            return;
+
+        World world = Bukkit.getWorld(w);
         if (world == null)
             return;
 
@@ -190,8 +194,8 @@ public class GameManager {
         } else
             return;
 
-        p.sendMessage(Component.text("Tu as rejoins l'équipe ").color(NamedTextColor.GRAY).append(
-                Component.text((team == TeamEnum.RED) ? "Rouge" : "Bleu").color(NamedTextColor.namedColor(team.value))
+        p.sendMessage(Component.text("You have joined the team: ").color(NamedTextColor.GRAY).append(
+                Component.text((team == TeamEnum.RED) ? "Red" : "Blue").color(NamedTextColor.namedColor(team.value))
         ));
         p.playerListName(Component.text(p.getName()).color(NamedTextColor.namedColor(team.value)));
     }

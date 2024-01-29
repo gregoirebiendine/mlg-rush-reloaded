@@ -10,23 +10,27 @@ import com.meliochausson.mlgrushreloaded.events.JoinEvent;
 import com.meliochausson.mlgrushreloaded.events.PlaceBlockEvent;
 import com.meliochausson.mlgrushreloaded.events.QuitEvent;
 import com.meliochausson.mlgrushreloaded.events.RespawnEvent;
+import com.meliochausson.mlgrushreloaded.managers.ConfigManager;
 import com.meliochausson.mlgrushreloaded.managers.GameManager;
 import com.meliochausson.mlgrushreloaded.managers.StuffManager;
 
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.Bukkit;
-import org.bukkit.GameRule;
 import org.bukkit.NamespacedKey;
-import org.bukkit.World;
 
 import static org.bukkit.Bukkit.getCommandMap;
 
 public final class MLGRushReloaded extends JavaPlugin {
     public final NamespacedKey key = new NamespacedKey(this, "data");
     public static MLGRushReloaded _instance;
+    private ConfigManager config = new ConfigManager(this);
 
     public static void runTaskLater(Runnable cb, double delaySeconds) {
         Bukkit.getScheduler().runTaskLater(_instance, cb, (long)(delaySeconds * 20L)); // 20 ticks = 1sec
+    }
+
+    public ConfigManager getCustomConfig() {
+        return this.config;
     }
 
     @Override

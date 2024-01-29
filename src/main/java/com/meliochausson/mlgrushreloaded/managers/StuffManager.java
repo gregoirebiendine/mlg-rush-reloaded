@@ -25,7 +25,7 @@ public class StuffManager {
         ItemStack wool = new ItemStack((team == TeamEnum.RED) ? Material.RED_WOOL : Material.BLUE_WOOL, 1);
         ItemMeta meta = wool.getItemMeta();
 
-        meta.displayName(Component.text((team == TeamEnum.RED) ? "Team Rouge" : "Team Blue").color(NamedTextColor.namedColor(team.value)));
+        meta.displayName(Component.text((team == TeamEnum.RED) ? "Join Red Team" : "Join Blue Team").color(NamedTextColor.namedColor(team.value)));
         meta.addEnchant(Enchantment.KNOCKBACK, 1, true);
         meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
         meta.getPersistentDataContainer().set(_key, PersistentDataType.STRING, data);

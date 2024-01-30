@@ -3,6 +3,8 @@ package com.meliochausson.mlgrushreloaded;
 import com.meliochausson.mlgrushreloaded.commands.mlgbridge;
 import com.meliochausson.mlgrushreloaded.commands.mlgstart;
 import com.meliochausson.mlgrushreloaded.commands.mlgstop;
+import com.meliochausson.mlgrushreloaded.commands.setspawn;
+
 import com.meliochausson.mlgrushreloaded.events.DropEvent;
 import com.meliochausson.mlgrushreloaded.events.FoodLevelEvent;
 import com.meliochausson.mlgrushreloaded.events.InteractEvent;
@@ -10,6 +12,7 @@ import com.meliochausson.mlgrushreloaded.events.JoinEvent;
 import com.meliochausson.mlgrushreloaded.events.PlaceBlockEvent;
 import com.meliochausson.mlgrushreloaded.events.QuitEvent;
 import com.meliochausson.mlgrushreloaded.events.RespawnEvent;
+
 import com.meliochausson.mlgrushreloaded.managers.ConfigManager;
 import com.meliochausson.mlgrushreloaded.managers.GameManager;
 import com.meliochausson.mlgrushreloaded.managers.StuffManager;
@@ -43,6 +46,7 @@ public final class MLGRushReloaded extends JavaPlugin {
         getCommandMap().register("mlgstart", "", new mlgstart("mlgstart"));
         getCommandMap().register("mlgstop", "", new mlgstop("mlgstop"));
         getCommandMap().register("mlgbridge", "", new mlgbridge("mlgbridge"));
+        getCommandMap().register("setspawn", "", new setspawn("setspawn"));
 
         getServer().getPluginManager().registerEvents(new DropEvent(), this);
         getServer().getPluginManager().registerEvents(new QuitEvent(), this);

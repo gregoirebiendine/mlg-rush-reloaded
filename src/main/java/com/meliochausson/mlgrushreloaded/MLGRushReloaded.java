@@ -26,7 +26,7 @@ import static org.bukkit.Bukkit.getCommandMap;
 public final class MLGRushReloaded extends JavaPlugin {
     public final NamespacedKey key = new NamespacedKey(this, "data");
     public static MLGRushReloaded _instance;
-    private ConfigManager config = new ConfigManager(this);
+    private final ConfigManager config = new ConfigManager(this);
 
     public static void runTaskLater(Runnable cb, double delaySeconds) {
         Bukkit.getScheduler().runTaskLater(_instance, cb, (long)(delaySeconds * 20L)); // 20 ticks = 1sec

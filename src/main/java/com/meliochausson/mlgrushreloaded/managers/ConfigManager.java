@@ -32,7 +32,7 @@ public class ConfigManager {
 	    }
     }
 	
-	public FileConfiguration getConfigFile() {
+	public FileConfiguration getConfigObject() {
 		return this.config;
 	}
 	

@@ -7,10 +7,11 @@ import net.kyori.adventure.text.format.NamedTextColor;
 
 import net.kyori.adventure.text.format.TextDecoration;
 import net.kyori.adventure.title.TitlePart;
-import org.bukkit.*;
-import org.bukkit.block.Block;
-import org.bukkit.block.BlockFace;
-import org.bukkit.block.BlockState;
+
+import org.bukkit.Bukkit;
+import org.bukkit.Location;
+import org.bukkit.Sound;
+import org.bukkit.World;
 import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
@@ -24,6 +25,7 @@ public class GameManager {
     public static MLGRushReloaded _instance;
 
     public static boolean isGameRunning = false;
+    public static boolean stopMoving = false;
 
     public static void init(MLGRushReloaded instance) {
         _instance = instance;
@@ -44,19 +46,39 @@ public class GameManager {
             if (p == null)
                 return;
 
+            GameManager.stopMoving = true;
             p.playSound(p, Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 1, 1);
             p.sendTitlePart(TitlePart.TITLE, Component.text("Setup...").color(NamedTextColor.GRAY).decorate(TextDecoration.ITALIC));
         });
 
+        String w = _instance.getCustomConfig().getGameWorld();
+        World gameWorld = Bukkit.getWorld(w);
+
+        final Location redLoc = new Location(gameWorld, 0.5, 66, -11.5, 0, 0);
+        final Location blueLoc = new Location(gameWorld, 0.5, 66, 11.5, -180, 0);
+
         MLGRushReloaded.runTaskLater(() -> {
-            tempList.forEach(uuid -> {
+            RedTeam.forEach(uuid -> {
                 final Player p = Bukkit.getPlayer(uuid);
-                String w = _instance.getCustomConfig().getGameWorld();
-                if (p == null || w == null)
-                    return;
-                p.teleport(Bukkit.getWorld(w).getSpawnLocation());
+                p.teleport(redLoc);
                 StuffManager.applyGameStuff(p);
             });
+            BlueTeam.forEach(uuid -> {
+                final Player p = Bukkit.getPlayer(uuid);
+                p.teleport(blueLoc);
+                StuffManager.applyGameStuff(p);
+            });
+
+            MLGRushReloaded.runTaskLater(() -> {
+                tempList.forEach(uuid -> {
+                    final Player p = Bukkit.getPlayer(uuid);
+                    if (p == null)
+                        return;
+                    p.playSound(p, Sound.ENTITY_ENDER_DRAGON_GROWL, 1, 1);
+                    p.sendTitlePart(TitlePart.TITLE, Component.text("GO!").color(NamedTextColor.RED).decorate(TextDecoration.ITALIC));
+                });
+                GameManager.stopMoving = false;
+            }, 1);
         }, 1.5);
 
         isGameRunning = true;
@@ -68,117 +90,25 @@ public class GameManager {
         RedTeam.forEach(uuid -> {
             final Player p = Bukkit.getPlayer(uuid);
             String w = _instance.getCustomConfig().getLobbyWorld();
+
             if (p == null || w == null)
+                return;
+                
+            World lobby = Bukkit.getWorld(w);
+
+            if (lobby == null)
                 return;
 
             p.playerListName(null);
-            StuffManager.applyLobbyStuff(p);
-            p.teleport(Bukkit.getWorld(w).getSpawnLocation());
-        });
 
-        clearMap();
+            StuffManager.applyLobbyStuff(p);
+            p.teleport(lobby.getSpawnLocation());
+        });
 
         RedTeam.clear();
         BlueTeam.clear();
         
         isGameRunning = false;
-    }
-
-    private static void clearMap() {
-        String w = _instance.getCustomConfig().getGameWorld();
-        if (w == null)
-            return;
-
-        World world = Bukkit.getWorld(w);
-        if (world == null)
-            return;
-
-        // Clear the world
-        // world.getEntities().forEach(entity -> entity.remove());
-        // Remove blocks
-        for (int x = -22; x <= 22; x++) {
-            for (int y = -3; y <= 16; y++) {
-                for (int z = -22; z <= 22; z++) {
-                    Block block = world.getBlockAt(x, y, z);
-                    block.setType(Material.AIR);
-                }
-            }
-        }
-
-        // Building bridge
-        int bridgeLength = 36;
-        int bridgeHeight = 3;
-
-        int wallHeight = 12;
-        int wallDistance = 4;
-
-        // Create the bridge
-        int startX = -bridgeLength / 2;
-        int endX = startX + bridgeLength - 1;
-
-        for (int x = startX; x <= endX; x++) {
-            for (int y = 0; y < bridgeHeight; y++) {
-                Block block = world.getBlockAt(x, y, 0);
-                block.setType(Material.SMOOTH_SANDSTONE);
-            }
-        }
-
-        // Create the surrounding walls
-        int wallStartX = startX - wallDistance;
-        int wallEndX = endX + wallDistance;
-
-        // Walls parallel to the bridge
-        for (int z = -4; z <= 4; z += 8) { // 4 blocks of air to the bridge
-            for (int x = wallStartX; x <= wallEndX; x++) {
-                for (int y = 0; y < wallHeight; y++) {
-                    Block block = world.getBlockAt(x, y, z);
-                    block.setType(Material.OBSIDIAN);
-                }
-            }
-        }
-
-        // Walls at the start and end of the bridge
-        for (int z = -bridgeLength / 2; z <= bridgeLength / 2; z++) {
-            for (int x : new int[]{startX, endX}) { // directly adjacent to the bridge
-                for (int y = 0; y < wallHeight; y++) {
-                    Block block = world.getBlockAt(x, y, z);
-                    block.setType(Material.OBSIDIAN);
-                }
-            }
-        }
-        // Add a layer of Barrier blocks above the walls
-        for (int x = wallStartX; x <= wallEndX; x++) {
-            for (int z = -bridgeLength / 2; z <= bridgeLength / 2; z++) {
-                Block block = world.getBlockAt(x, wallHeight, z);
-                block.setType(Material.BARRIER);
-            }
-        }
-
-        // Spawn beds
-        BlockState bedFoot = world.getBlockAt(-17, 3, 0).getState();
-        BlockState bedHead = bedFoot.getBlock().getRelative(BlockFace.EAST).getState();
-
-        bedFoot.setType(Material.RED_BED);
-        bedHead.setType(Material.RED_BED);
-
-        bedFoot.setRawData((byte) 0x0); // Foot part of the bed
-        bedHead.setRawData((byte) 0x8); // Head part of the bed
-
-        bedFoot.update(true, false);
-        bedHead.update(true, true);
-
-        // Bed 2
-        bedFoot = world.getBlockAt(16, 3, 0).getState();
-        bedHead = bedFoot.getBlock().getRelative(BlockFace.WEST).getState();
-
-        bedFoot.setType(Material.RED_BED);
-        bedHead.setType(Material.RED_BED);
-
-        bedFoot.setRawData((byte) 0x0); // Foot part of the bed
-        bedHead.setRawData((byte) 0x8); // Head part of the bed
-
-        bedFoot.update(true, false);
-        bedHead.update(true, true);
     }
 
     public static void joinTeam(Player p, TeamEnum team) {

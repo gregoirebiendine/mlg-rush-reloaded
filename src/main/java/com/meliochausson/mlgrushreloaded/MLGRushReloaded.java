@@ -1,14 +1,13 @@
 package com.meliochausson.mlgrushreloaded;
 
-import com.meliochausson.mlgrushreloaded.commands.mlgbridge;
 import com.meliochausson.mlgrushreloaded.commands.mlgstart;
 import com.meliochausson.mlgrushreloaded.commands.mlgstop;
-import com.meliochausson.mlgrushreloaded.commands.setspawn;
-
+import com.meliochausson.mlgrushreloaded.events.BreakBlockEvent;
 import com.meliochausson.mlgrushreloaded.events.DropEvent;
 import com.meliochausson.mlgrushreloaded.events.FoodLevelEvent;
 import com.meliochausson.mlgrushreloaded.events.InteractEvent;
 import com.meliochausson.mlgrushreloaded.events.JoinEvent;
+import com.meliochausson.mlgrushreloaded.events.MoveEvent;
 import com.meliochausson.mlgrushreloaded.events.PlaceBlockEvent;
 import com.meliochausson.mlgrushreloaded.events.QuitEvent;
 import com.meliochausson.mlgrushreloaded.events.RespawnEvent;
@@ -45,20 +44,25 @@ public final class MLGRushReloaded extends JavaPlugin {
 
         getCommandMap().register("mlgstart", "", new mlgstart("mlgstart"));
         getCommandMap().register("mlgstop", "", new mlgstop("mlgstop"));
-        getCommandMap().register("mlgbridge", "", new mlgbridge("mlgbridge"));
-        getCommandMap().register("setspawn", "", new setspawn("setspawn"));
+
+        getServer().getPluginManager().registerEvents(new JoinEvent(), this);
+        getServer().getPluginManager().registerEvents(new QuitEvent(), this);
 
         getServer().getPluginManager().registerEvents(new DropEvent(), this);
-        getServer().getPluginManager().registerEvents(new QuitEvent(), this);
         getServer().getPluginManager().registerEvents(new FoodLevelEvent(), this);
+
+
         getServer().getPluginManager().registerEvents(new RespawnEvent(), this);
+        getServer().getPluginManager().registerEvents(new MoveEvent(), this);
+
         getServer().getPluginManager().registerEvents(new PlaceBlockEvent(), this);
-        getServer().getPluginManager().registerEvents(new JoinEvent(), this);
+        getServer().getPluginManager().registerEvents(new BreakBlockEvent(), this);
         getServer().getPluginManager().registerEvents(new InteractEvent(this), this);
     }
 
     @Override
     public void onDisable() {
+        this.config.saveConfig();
         GameManager.clearGame();
     }
 }

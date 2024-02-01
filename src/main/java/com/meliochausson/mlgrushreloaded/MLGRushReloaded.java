@@ -2,7 +2,9 @@ package com.meliochausson.mlgrushreloaded;
 
 import com.meliochausson.mlgrushreloaded.commands.mlgstart;
 import com.meliochausson.mlgrushreloaded.commands.mlgstop;
+import com.meliochausson.mlgrushreloaded.events.BedSleepEvent;
 import com.meliochausson.mlgrushreloaded.events.BreakBlockEvent;
+import com.meliochausson.mlgrushreloaded.events.DeathListener;
 import com.meliochausson.mlgrushreloaded.events.DropEvent;
 import com.meliochausson.mlgrushreloaded.events.FoodLevelEvent;
 import com.meliochausson.mlgrushreloaded.events.InteractEvent;
@@ -25,7 +27,7 @@ import static org.bukkit.Bukkit.getCommandMap;
 public final class MLGRushReloaded extends JavaPlugin {
     public final NamespacedKey key = new NamespacedKey(this, "data");
     public static MLGRushReloaded _instance;
-    private final ConfigManager config = new ConfigManager(this);
+    public final ConfigManager config = new ConfigManager(this);
 
     public static void runTaskLater(Runnable cb, double delaySeconds) {
         Bukkit.getScheduler().runTaskLater(_instance, cb, (long)(delaySeconds * 20L)); // 20 ticks = 1sec
@@ -39,7 +41,7 @@ public final class MLGRushReloaded extends JavaPlugin {
     public void onEnable() {
         _instance = this;
 
-        GameManager.init(this);
+        GameManager.init(this, getDataFolder().getAbsolutePath());
         StuffManager.init(key);
 
         getCommandMap().register("mlgstart", "", new mlgstart("mlgstart"));
@@ -51,18 +53,18 @@ public final class MLGRushReloaded extends JavaPlugin {
         getServer().getPluginManager().registerEvents(new DropEvent(), this);
         getServer().getPluginManager().registerEvents(new FoodLevelEvent(), this);
 
-
         getServer().getPluginManager().registerEvents(new RespawnEvent(), this);
         getServer().getPluginManager().registerEvents(new MoveEvent(), this);
 
         getServer().getPluginManager().registerEvents(new PlaceBlockEvent(), this);
         getServer().getPluginManager().registerEvents(new BreakBlockEvent(), this);
+        getServer().getPluginManager().registerEvents(new BedSleepEvent(), this);
         getServer().getPluginManager().registerEvents(new InteractEvent(this), this);
+        getServer().getPluginManager().registerEvents(new DeathListener(), this);
     }
 
     @Override
     public void onDisable() {
         this.config.saveConfig();
-        GameManager.clearGame();
     }
 }

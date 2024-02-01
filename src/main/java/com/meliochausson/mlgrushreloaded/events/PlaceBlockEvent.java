@@ -16,7 +16,7 @@ public class PlaceBlockEvent implements Listener {
             return;
 
         ItemStack item = event.getItemInHand();
-        if (item.getType() == Material.SANDSTONE)
+        if (item.getType() == Material.SANDSTONE && item.getAmount() > 50)
             item.setAmount(64);
     }
 }

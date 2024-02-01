@@ -25,12 +25,9 @@ public class JoinEvent implements Listener {
 
         event.joinMessage(msg);
 
-        String w = MLGRushReloaded._instance.getCustomConfig().getLobbyWorld();
-        if (w != null) {
-            final World lobby = Bukkit.getWorld(w);
-            if (lobby != null)
-                p.teleport(lobby.getSpawnLocation());
-        }
+        final World lobby = MLGRushReloaded._instance.getCustomConfig().getLobbyWorld();
+        if (lobby != null)
+            p.teleport(lobby.getSpawnLocation());
 
         p.setHealth(20);
         p.setFoodLevel(20);

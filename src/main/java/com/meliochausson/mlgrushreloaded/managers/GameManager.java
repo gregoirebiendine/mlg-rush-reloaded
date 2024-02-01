@@ -27,12 +27,19 @@ public class GameManager {
     public static boolean isGameRunning = false;
     public static boolean stopMoving = false;
 
+    private static final World gameWorld = _instance.getCustomConfig().getGameWorld();
+    private static final Location redLoc = new Location(gameWorld, 0.5, 66, -11.5, 0, 0);
+    private static final Location blueLoc = new Location(gameWorld, 0.5, 66, 11.5, -180, 0);
+
     public static void init(MLGRushReloaded instance) {
         _instance = instance;
         clearGame();
     }
 
     public static void startGame(Player sender) {
+        if (gameWorld == null)
+            return;
+            
         List<UUID> tempList = new ArrayList<>(RedTeam);
         tempList.addAll(BlueTeam);
 
@@ -50,12 +57,6 @@ public class GameManager {
             p.playSound(p, Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 1, 1);
             p.sendTitlePart(TitlePart.TITLE, Component.text("Setup...").color(NamedTextColor.GRAY).decorate(TextDecoration.ITALIC));
         });
-
-        String w = _instance.getCustomConfig().getGameWorld();
-        World gameWorld = Bukkit.getWorld(w);
-
-        final Location redLoc = new Location(gameWorld, 0.5, 66, -11.5, 0, 0);
-        final Location blueLoc = new Location(gameWorld, 0.5, 66, 11.5, -180, 0);
 
         MLGRushReloaded.runTaskLater(() -> {
             RedTeam.forEach(uuid -> {
@@ -89,18 +90,12 @@ public class GameManager {
 
         RedTeam.forEach(uuid -> {
             final Player p = Bukkit.getPlayer(uuid);
-            String w = _instance.getCustomConfig().getLobbyWorld();
+            final World lobby = _instance.getCustomConfig().getLobbyWorld();
 
-            if (p == null || w == null)
-                return;
-                
-            World lobby = Bukkit.getWorld(w);
-
-            if (lobby == null)
+            if (p == null || lobby == null)
                 return;
 
             p.playerListName(null);
-
             StuffManager.applyLobbyStuff(p);
             p.teleport(lobby.getSpawnLocation());
         });

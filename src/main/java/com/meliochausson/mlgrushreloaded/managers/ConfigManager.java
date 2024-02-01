@@ -1,5 +1,7 @@
 package com.meliochausson.mlgrushreloaded.managers;
 
+import org.bukkit.Bukkit;
+import org.bukkit.World;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -44,12 +46,16 @@ public class ConfigManager {
 		return this.config.get(section);
 	}
 
-	public @Nullable String getLobbyWorld() {
-		return this.config.get("worlds.lobby").toString();
+	public @Nullable World getLobbyWorld() {
+		if (!this.entryExist("worlds.lobby"))
+			return null;
+		return Bukkit.getWorld(this.config.get("worlds.lobby").toString());
 	}
 	
-	public @Nullable String getGameWorld() {
-		return this.config.get("worlds.game").toString();
+	public @Nullable World getGameWorld() {
+		if (!this.entryExist("worlds.game"))
+			return null;
+		return Bukkit.getWorld(this.config.get("worlds.game").toString());
 	}
 	
 	public void setSection(String section, Object value) {

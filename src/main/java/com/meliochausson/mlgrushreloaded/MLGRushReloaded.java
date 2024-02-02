@@ -12,7 +12,6 @@ import com.meliochausson.mlgrushreloaded.events.JoinEvent;
 import com.meliochausson.mlgrushreloaded.events.MoveEvent;
 import com.meliochausson.mlgrushreloaded.events.PlaceBlockEvent;
 import com.meliochausson.mlgrushreloaded.events.QuitEvent;
-import com.meliochausson.mlgrushreloaded.events.RespawnEvent;
 
 import com.meliochausson.mlgrushreloaded.managers.ConfigManager;
 import com.meliochausson.mlgrushreloaded.managers.GameManager;
@@ -25,8 +24,9 @@ import org.bukkit.NamespacedKey;
 import static org.bukkit.Bukkit.getCommandMap;
 
 public final class MLGRushReloaded extends JavaPlugin {
-    public final NamespacedKey key = new NamespacedKey(this, "data");
+
     public static MLGRushReloaded _instance;
+    public final NamespacedKey key = new NamespacedKey(this, "data");
     public final ConfigManager config = new ConfigManager(this);
 
     public static void runTaskLater(Runnable cb, double delaySeconds) {
@@ -41,11 +41,12 @@ public final class MLGRushReloaded extends JavaPlugin {
     public void onEnable() {
         _instance = this;
 
-        GameManager.init(this, getDataFolder().getAbsolutePath());
+        GameManager.init(this);
         StuffManager.init(key);
 
         getCommandMap().register("mlgstart", "", new mlgstart("mlgstart"));
         getCommandMap().register("mlgstop", "", new mlgstop("mlgstop"));
+        // getCommandMap().register("restore", "", new restore("restore"));
 
         getServer().getPluginManager().registerEvents(new JoinEvent(), this);
         getServer().getPluginManager().registerEvents(new QuitEvent(), this);
@@ -53,7 +54,6 @@ public final class MLGRushReloaded extends JavaPlugin {
         getServer().getPluginManager().registerEvents(new DropEvent(), this);
         getServer().getPluginManager().registerEvents(new FoodLevelEvent(), this);
 
-        getServer().getPluginManager().registerEvents(new RespawnEvent(), this);
         getServer().getPluginManager().registerEvents(new MoveEvent(), this);
 
         getServer().getPluginManager().registerEvents(new PlaceBlockEvent(), this);

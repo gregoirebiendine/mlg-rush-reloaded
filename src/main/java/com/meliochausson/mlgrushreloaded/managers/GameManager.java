@@ -10,92 +10,48 @@ import net.kyori.adventure.title.TitlePart;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.World;
-import org.bukkit.WorldCreator;
+import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 
 import static org.bukkit.Bukkit.getLogger;
 
-import java.io.File;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
 import java.util.UUID;
 
 public class GameManager {
     public static final List<UUID> RedTeam = new ArrayList<>();
     public static final List<UUID> BlueTeam = new ArrayList<>();
-    public static int redPoints = 0;
-    public static int bluePoints = 0;
-    public static int pointsToWin = 5;
 
     public static MLGRushReloaded _instance;
+
+    public final static int pointsToWin = 5;
+    public static int redPoints = 0;
+    public static int bluePoints = 0;
 
     public static boolean isGameRunning = false;
     public static boolean stopMoving = false;
 
-    private static final World gameWorld = MLGRushReloaded._instance.getCustomConfig().getGameWorld();
-    public static final Location redLoc = new Location(gameWorld, 0.5, 66, -11.5, 0, 0);
-    public static final Location blueLoc = new Location(gameWorld, 0.5, 66, 11.5, -180, 0);
-    public static String _serverFolder;
+    private static World gameWorld;
+    public static Location redLoc;
+    public static Location blueLoc;
 
-    public static void init(MLGRushReloaded instance, String dataFolderPath) {
-        _serverFolder = new File(dataFolderPath).getParentFile().getParentFile().getAbsolutePath();
+    public static void init(MLGRushReloaded instance) {
         _instance = instance;
-        clearGame();
-    }
-
-    public static void ReplaceWorldWithTemplate() {
-        // world reset
-        // so we wanna unload and then copy the template
-        Bukkit.unloadWorld(gameWorld, false);
-
-        String path_gameworld = GameManager._serverFolder + "/" + _instance.getCustomConfig().getConfigObject().get("worlds.game").toString();
-        String path_template = GameManager._serverFolder + "/" + _instance.getCustomConfig().getConfigObject().get("worlds.game").toString() + "-template";
-    
-        try {
-            // Delete existing "game" world
-            // Files.walk(Paths.get(path_gameworld))
-            //     .sorted(Comparator.reverseOrder())
-            //     .forEach(path -> {
-            //         try {
-            //             Files.delete(path);
-            //         } catch (IOException e) {
-            //             getLogger().info("Exception while deleting files: " + e.getMessage());
-            //         }
-            //     });
-                // Copy new files
-                Files.walk(Paths.get(path_template))
-                    .forEach(path -> {
-                        try {
-                            Files.copy(path, Paths.get(path_gameworld).resolve(path.getFileName()), StandardCopyOption.REPLACE_EXISTING);
-                        } catch (IOException e) {
-                            getLogger().info("Exception while copying files: " + e.getMessage());
-
-                        }
-                    });
-        } catch (IOException e) {
-            getLogger().info("Exception while replacing files: " + e.getMessage());
-        }
-
-        // debug print to console
-        getLogger().info("path_gameworld: " + path_gameworld);
-        getLogger().info("path_template: " + path_template);
-
-        // reload "game" world
-        Bukkit.createWorld(new WorldCreator(_instance.getCustomConfig().getConfigObject().get("worlds.game").toString()));
     }
 
     public static void startGame(Player sender) {
-        if (gameWorld == null)
-            return;
-        
+        gameWorld = Bukkit.getWorld("game");
+        redLoc = new Location(gameWorld, 0.5, 66, -11.5, 0, 0);
+        blueLoc = new Location(gameWorld, 0.5, 66, 11.5, -180, 0);
 
+        if (gameWorld == null) {
+            getLogger().info("null?");
+            return;
+        }
             
         List<UUID> tempList = new ArrayList<>(RedTeam);
         tempList.addAll(BlueTeam);
@@ -113,10 +69,6 @@ public class GameManager {
             GameManager.stopMoving = true;
             p.playSound(p, Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 1, 1);
             p.sendTitlePart(TitlePart.TITLE, Component.text("Setup...").color(NamedTextColor.GRAY).decorate(TextDecoration.ITALIC));
-
-            
-            ReplaceWorldWithTemplate();
-
         });
 
         MLGRushReloaded.runTaskLater(() -> {
@@ -169,6 +121,28 @@ public class GameManager {
         bluePoints = 0;
         
         isGameRunning = false;
+
+        for (short x = -5; x <= 18; x++) {
+            for (short y = 60; y <= 74; y++) {
+                for (short z = -18; z <= 18; z++) {
+                    Block b = gameWorld.getBlockAt(x, y, z);
+                    if (b.getType() == Material.SANDSTONE)
+                        b.setType(Material.AIR);
+                }
+            }
+        }
+
+        for (short z = -9; z <= 9; z++) {
+            Block b = gameWorld.getBlockAt(0, 64, z);
+            b.setType(Material.SANDSTONE);
+        }
+
+        // -5 -> 18
+        // 60 -> 74
+        // -18 -> 18
+
+        // /fill -5 60 -18 5 74 18 minecraft:air replace minecraft:sandstone
+        // /fill 0 64 9 0 64 -9
     }
 
     public static void joinTeam(Player p, TeamEnum team) {
@@ -185,7 +159,7 @@ public class GameManager {
             return;
 
         p.sendMessage(Component.text("You have joined the team: ").color(NamedTextColor.GRAY).append(
-                Component.text((team == TeamEnum.RED) ? "Red" : "Blue").color(NamedTextColor.namedColor(team.value))
+            Component.text((team == TeamEnum.RED) ? "Red" : "Blue").color(NamedTextColor.namedColor(team.value))
         ));
         p.playerListName(Component.text(p.getName()).color(NamedTextColor.namedColor(team.value)));
     }
